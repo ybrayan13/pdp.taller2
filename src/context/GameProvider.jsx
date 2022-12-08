@@ -42,38 +42,42 @@ const GameProvider = ({ children }) => {
 		setPlayerTwo({ ...playerTwo, cards: data.cards });
 	};
 
+	const deckFull = cards => {
+		if (cards[0].cant == 4 && cards[1].cant == 3 && cards[2].cant == 3) {
+			return true;
+		} else {
+			return false;
+		}
+	};
+
 	const requestCards = () => {
-		getCards(); 
+		const deckFullPlayerOne = deckFull(playerOne.cards);
+		const deckFullPlayerTwo = deckFull(playerTwo.cards);
 
-		const findCardPlayerOne = recuento(playerOne.cards, 1);
-		const findCardPlayerTwo = recuento(playerTwo.cards, 2);
-
-		setPlayerOne({name:'',cards:[]});
-		setPlayerTwo({ ...playerTwo, cards: [] });
-
-
-		if (findCardPlayerOne && findCardPlayerTwo) {
+		if (deckFullPlayerOne && deckFullPlayerTwo) {
 			setWin(true);
 			setShowToast(true);
 			setWinName('EMPATE');
+		}
+		if (deckFullPlayerOne || deckFullPlayerTwo) {
+			setWin(true);
+			setShowToast(true);
+			setWinName(deckFullPlayerOne ? playerOne.name : playerTwo.name);
 		} else {
-			if (findCardPlayerOne || findCardPlayerTwo) {
-				setWin(true);
-				setShowToast(true);
-				setWinName(findCardPlayerOne ? playerOne.name : playerTwo.name);
-			}
+			getCards();
 		}
 	};
 
 	const getCards = async () => {
 		const data = await DeckOfCardsAPI.getCards(idGame);
+		// console.log(data);
 		setCantCards(data.remaining);
-		setPlayerOne({ ...playerOne, cards: [...playerOne.cards, data.cards[0]] });
-		setPlayerTwo({ ...playerTwo, cards: [...playerTwo.cards, data.cards[1]] });
+		recuento(playerOne.cards, 1, data.cards[0]);
+		recuento(playerTwo.cards, 2, data.cards[1]);
 	};
 
 	let res, filtro, nCard, cardDelete, newDeck, checkDelete;
-	const recuento = (cardsPlayer, player) => {
+	const recuento = (cardsPlayer, player, newCard) => {
 		res = [];
 		filtro = [];
 		newDeck = [];
@@ -115,32 +119,22 @@ const GameProvider = ({ children }) => {
 		} else {
 			cardDelete = filtro.pop();
 		}
-		console.log(cardDelete);
+		// console.log(cardDelete);
 
-		// gana si tiene 4, terna, terna
-		if (filtro[0].cant == 4 && filtro[1].cant == 3 && filtro[2].cant == 3) {
-			return true;
-		} else {
-			cardsPlayer.forEach(card => {
-				if (checkDelete && card.value == cardDelete.value) {
-					checkDelete = false;
-				} else {
-					newDeck.push(card);
-				}
-			});
-			// console.log(newDeck);
-
-			if (player == 1) {
-				setPlayerOne({ ...playerOne, cards: newDeck });
-				// setPlayerOne({ ...playerOne, cards: [...playerOne.cards, data.cards[0]] });
-
+		cardsPlayer.forEach(card => {
+			if (checkDelete && card.value == cardDelete.value) {
+				checkDelete = false;
 			} else {
-				setPlayerTwo({ ...playerTwo, cards: newDeck });
-
-				// console.log('player 2');
+				newDeck.push(card);
 			}
+		});
+		newDeck.push(newCard);
 
-			return false;
+		if (player === 1) {
+			// console.log(newDeck);
+			setPlayerOne({ ...playerOne, cards: newDeck });
+		} else {
+			setPlayerTwo({ ...playerTwo, cards: newDeck });
 		}
 	};
 
