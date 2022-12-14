@@ -142,7 +142,7 @@ const GameProvider = ({ children }) => {
 		filtro = filtro.sort((p1, p2) =>
 			p1.cant < p2.cant ? 1 : p1.cant > p2.cant ? -1 : 0
 		);
-		console.log(filtro);
+		
 
 		if (filtro[1].cant >= 4) {
 			cardDelete = filtro.shift();
@@ -166,6 +166,8 @@ const GameProvider = ({ children }) => {
 		} else {
 			setPlayerTwo({ ...playerTwo, cards: newDeck });
 		}
+		console.log(player);
+		console.log(filtro);
 	};
 
 	return (
