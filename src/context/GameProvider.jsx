@@ -43,7 +43,37 @@ const GameProvider = ({ children }) => {
 	};
 
 	const deckFull = cards => {
-		if (cards[0].cant == 4 && cards[1].cant == 3 && cards[2].cant == 3) {
+		res = [];
+		filtro = [];
+		for (let index = 1; index <= 13; index++) {
+			switch (index) {
+				case 1:
+					nCard = 'ACE';
+					break;
+				case 11:
+					nCard = 'JACK';
+					break;
+				case 12:
+					nCard = 'QUEEN';
+					break;
+				case 13:
+					nCard = 'KING';
+					break;
+				default:
+					nCard = index;
+					break;
+			}
+			res.push({
+				value: nCard,
+				cant: cards.filter(card => card.value == nCard).length,
+			});
+		}
+		filtro = res.filter(card => card.cant > 0);
+
+		filtro = filtro.sort((p1, p2) =>
+			p1.cant < p2.cant ? 1 : p1.cant > p2.cant ? -1 : 0
+		);
+		if (filtro[0].cant == 4 && filtro[1].cant == 3 && filtro[2].cant == 3) {
 			return true;
 		} else {
 			return false;
