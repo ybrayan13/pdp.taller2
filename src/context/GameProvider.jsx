@@ -42,7 +42,9 @@ const GameProvider = ({ children }) => {
 		setPlayerTwo({ ...playerTwo, cards: data.cards });
 	};
 
-	const deckFull = cards => {
+	let res, filtro, nCard, cardDelete, newDeck, checkDelete;
+
+	const conteo = cards => {
 		res = [];
 		filtro = [];
 		for (let index = 1; index <= 13; index++) {
@@ -73,6 +75,12 @@ const GameProvider = ({ children }) => {
 		filtro = filtro.sort((p1, p2) =>
 			p1.cant < p2.cant ? 1 : p1.cant > p2.cant ? -1 : 0
 		);
+		return filtro;
+	};
+
+	const deckFull = cards => {
+		res = [];
+		filtro = conteo(cards);
 		if (filtro[0].cant == 4 && filtro[1].cant == 3 && filtro[2].cant == 3) {
 			return true;
 		} else {
@@ -106,44 +114,14 @@ const GameProvider = ({ children }) => {
 		recuento(playerTwo.cards, 2, data.cards[1]);
 	};
 
-	let res, filtro, nCard, cardDelete, newDeck, checkDelete;
 	const recuento = (cardsPlayer, player, newCard) => {
 		res = [];
-		filtro = [];
+		filtro = conteo(cardsPlayer);
 		newDeck = [];
 		nCard = null;
 		cardDelete = null;
 		checkDelete = true;
-		for (let index = 1; index <= 13; index++) {
-			switch (index) {
-				case 1:
-					nCard = 'ACE';
-					break;
-				case 11:
-					nCard = 'JACK';
-					break;
-				case 12:
-					nCard = 'QUEEN';
-					break;
-				case 13:
-					nCard = 'KING';
-					break;
-				default:
-					nCard = index;
-					break;
-			}
-			res.push({
-				value: nCard,
-				cant: cardsPlayer.filter(card => card.value == nCard).length,
-			});
-		}
-		filtro = res.filter(card => card.cant > 0);
-
-		filtro = filtro.sort((p1, p2) =>
-			p1.cant < p2.cant ? 1 : p1.cant > p2.cant ? -1 : 0
-		);
 		
-
 		if (filtro[1].cant >= 4) {
 			cardDelete = filtro.shift();
 		} else {
